@@ -1,0 +1,28 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "nome": "admin",
+      "login": "admin",
+      "senha": "123123",
+      "grupo": "administrador"
+    },
+    {
+      "nome": "Karina",
+      "login": "karina",
+      "senha": "1234",
+      "grupo": "aluno",
+      "id": 2
+    },
+    {
+      "nome": "karina",
+      "login": "ka",
+      "senha": "123",
+      "grupo": "aluno",
+      "id": 3
+    }
+  ],
+  "sessions": [
+    
+  ]
+}
