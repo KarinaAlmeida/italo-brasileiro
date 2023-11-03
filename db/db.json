@@ -8,21 +8,32 @@
       "grupo": "administrador"
     },
     {
-      "nome": "Karina",
-      "login": "karina",
-      "senha": "1234",
+      "nome": "ka",
+      "login": "Karina",
+      "senha": "123",
       "grupo": "aluno",
       "id": 2
     },
     {
-      "nome": "karina",
-      "login": "ka",
+      "nome": "aluno",
+      "login": "333",
       "senha": "123",
       "grupo": "aluno",
       "id": 3
+    },
+    {
+      "nome": "alunoo",
+      "login": "444",
+      "senha": "123",
+      "grupo": "aluno",
+      "id": 4
+    },
+    {
+      "nome": "Prof",
+      "login": "Pro",
+      "senha": "123",
+      "grupo": "professor",
+      "id": 5
     }
-  ],
-  "sessions": [
-    
   ]
 }

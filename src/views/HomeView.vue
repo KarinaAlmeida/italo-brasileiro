@@ -14,15 +14,17 @@
         <label for="senha">Senha:</label>
         <input type="password" id="senha" v-model="novoUsuario.senha" required>
       </div>
-      <div>
+       <div class="grupo-input">
         <label for="grupo">Grupo:</label>
-        <input type="text" id="grupo" v-model="novoUsuario.grupo" required>
+        <select id="grupo" v-model="novoUsuario.grupo" required>
+          <option value="aluno">Aluno</option>
+          <option value="professor">Professor</option>
+        </select>
       </div>
       <button type="submit">Cadastrar</button>
     </form>
     <p v-if="mensagemErro">{{ mensagemErro }}</p>
-     <a @click="redirecionarParaLogin" class="link-cadastro">Já tem conta? Logue aqui</a>
-
+    <a @click="redirecionarParaLogin" class="link-cadastro">Já tem conta? Logue aqui</a>
   </div>
 </template>
 
@@ -106,7 +108,7 @@ label {
   font-size: 24px;
 }
 
-input {
+input, select {
   width: 100%;
   height: 40px;
   border-radius: 6px;
@@ -115,6 +117,10 @@ input {
   border: 2px solid;
   box-sizing: border-box;
   margin-bottom: 10px;
+}
+
+.grupo-input {
+  text-align: left;
 }
 
 button {

@@ -44,7 +44,7 @@ export default {
           const usuarioEncontrado = usuarios.find(user => user.login === login && user.senha === senha);
 
           if (usuarioEncontrado) {
-            
+            localStorage.setItem('usuarioLogado', JSON.stringify(usuarioEncontrado));
             this.$router.push('/menu');
           } else {
             this.mensagemErro = 'Algo está errado. Verifique seu login e senha.';

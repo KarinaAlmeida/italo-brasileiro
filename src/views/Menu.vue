@@ -2,63 +2,144 @@
   <div class="menu">
     <h1>Menu Inicial</h1>
 
-     <!-- Seção para Listar Nomes de Alunos -->
+    <!-- Seção para Alterar login -->
     <div class="menu-section">
-      <button @click="listarNomesAlunos" class="menu-button">Listar Nomes de Alunos</button>
-      <ul>
+      <label for="novoLogin">Novo login:</label>
+      <input
+        type="text"
+        id="novoLogin"
+        v-model="novoLogin"
+        class="menu-input"
+      />
+      <button @click="alterarLogin" class="menu-button">
+        Alterar meu login
+      </button>
+    </div>
+
+    <!-- Seção para Listar Nomes de Alunos -->
+    <div class="menu-section">
+      <button @click="listarNomesAlunos" class="menu-button">
+        {{ mostrarNomesAlunos ? "Esconder Alunos" : "Listar Alunos" }}
+      </button>
+      <ul v-if="mostrarNomesAlunos">
         <li v-for="nome in nomesAlunos" :key="nome">{{ nome }}</li>
       </ul>
     </div>
 
-
-    <!-- Seção para Alterar E-mail -->
-    <div class="menu-section">
-      <label for="novoEmail">Novo E-mail:</label>
-      <input type="text" id="novoEmail" v-model="novoEmail" class="menu-input" />
-      <button @click="alterarEmail" class="menu-button">Alterar E-mail</button>
-    </div>
-
     <!-- Seção para Deletar Usuário -->
     <div class="menu-section">
-      <label for="usuarioParaDeletar">ID do Usuário a Deletar:</label>
-      <input type="text" id="usuarioParaDeletar" v-model="idUsuarioParaDeletar" class="menu-input" />
-      <button @click="deletarUsuario" class="menu-button">Deletar Usuário</button>
+      <button @click="deletarUsuario" class="menu-button">
+        Deletar usuário
+      </button>
+    </div>
+    <!-- Botão de Logout -->
+    <div class="menu-section">
+      <button @click="efetuarLogout" class="menu-button">Logout</button>
     </div>
   </div>
 </template>
 
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
+  created() {
+    if (!this.verificarUsuarioLogado()) {
+      this.$router.push("/");
+    }
+  },
   data() {
     return {
-      novoEmail: '',
+      novoLogin: "",
+      mostrarNomesAlunos: false,
+      nomesAlunos: [],
     };
   },
   methods: {
+    verificarUsuarioLogado() {
+      const usuarioLogado = localStorage.getItem("usuarioLogado");
+
+      return !!usuarioLogado;
+    },
+
     async listarNomesAlunos() {
-      // Realize a chamada para o servidor para atualizar o e-mail do usuário
-      try {
-        const response = await axios.put('URL_DO_SEU_ENDPOINT', { novoEmail: this.novoEmail });
-        // Se a atualização for bem-sucedida, atualize a interface do usuário e limpe o campo de novo e-mail
-        // Você pode adicionar feedback ao usuário, como uma mensagem de sucesso ou erro.
-        console.log('E-mail atualizado com sucesso:', response.data);
-        this.novoEmail = '';
-      } catch (error) {
-        console.error('Erro ao atualizar o e-mail:', error);
-        // Lidar com erros, mostrar mensagens de erro, etc.
+      this.mostrarNomesAlunos = !this.mostrarNomesAlunos;
+
+      if (this.mostrarNomesAlunos) {
+        try {
+          const response = await axios.get(
+            "http://localhost:3000/users?grupo=aluno"
+          );
+          this.nomesAlunos = response.data.map((usuario) => usuario.nome);
+        } catch (error) {
+          console.error("Erro ao listar os nomes dos alunos:", error);
+        }
       }
     },
 
-    async alterarEmail() {
+    async alterarLogin() {
+      const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
 
+      if (!usuarioLogado) {
+        console.error("Usuário logado não encontrado no localStorage.");
+        return;
+      }
+
+      if (usuarioLogado.login === "admin") {
+        alert('Usuário "admin" não pode alterar o login.');
+        return;
+      }
+
+      const usuarioId = usuarioLogado.id;
+
+      try {
+        await axios.patch(`http://localhost:3000/users/${usuarioId}`, {
+          login: this.novoLogin,
+        });
+
+        usuarioLogado.login = this.novoLogin;
+        localStorage.setItem("usuarioLogado", JSON.stringify(usuarioLogado));
+
+        alert("Login alterado com sucesso.");
+        this.novoLogin = "";
+      } catch (error) {
+        console.error("Erro ao alterar o login:", error);
+      }
     },
 
     async deletarUsuario() {
+      const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
 
-    }
+      if (!usuarioLogado) {
+        console.error("Usuário logado não encontrado no localStorage.");
+        return;
+      }
+
+      if (usuarioLogado.login === "admin") {
+        alert('Usuário "admin" não pode ser deletado.');
+        return;
+      }
+
+      const usuarioId = usuarioLogado.id;
+
+      try {
+        await axios.delete(`http://localhost:3000/users/${usuarioId}`);
+        localStorage.removeItem("usuarioLogado");
+        localStorage.removeItem("usuarioLogadoId");
+
+        alert("Usuário deletado com sucesso.");
+
+        this.$router.push("/");
+      } catch (error) {
+        console.error("Erro ao excluir o usuário:", error);
+      }
+    },
+
+    efetuarLogout() {
+      localStorage.removeItem("usuarioLogado");
+      this.$router.push("/");
+    },
   },
 };
 </script>
@@ -73,12 +154,12 @@ export default {
   font-family: "Oswald", sans-serif;
   font-weight: 700;
   gap: 10px;
-  background-color: #CF9FFF;
+  background-color: #cf9fff;
 }
 
 h1 {
   font-size: 36px;
-  color: #682DA4;
+  color: #682da4;
 }
 
 .menu-section {
@@ -100,9 +181,9 @@ h1 {
 }
 
 .menu-button {
-  width: 100%;
+  width: 250px;
   height: 50px;
-  background: #682DA4;
+  background: #682da4;
   border-radius: 6px;
   font-weight: 700;
   font-size: 24px;
